@@ -1,0 +1,40 @@
+name: Run packer build on a template file
+
+# Workflow trigger
+on:
+  push:
+    branches:
+      - "main"
+# Retrieves id toked for oidc role
+permissions:
+  id-token: write
+  contents: read
+
+# packer build
+jobs:
+  packer_build:
+    if: "contains(github.event.head_commit.message, 'build')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-west-2
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+          role-session-name: GitHubActions
+      - name: Validate Template
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: init
+          target: template.pkr.hcl
+          working_directory: src
+      - name: Build
+        uses: hashicorp/packer-github-actions@master
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort"
+          target: template.pkr.hcl
+          working_directory: src
+        
