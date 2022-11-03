@@ -6,7 +6,7 @@ Packer ami builder for Amazon 2. Builds are performed in us-west-2. Amis are cop
 
 Builds are triggered by commits to the main branch with a commit message of 'build'
 
-AWS authentication requires setting up an OIDC provider with a trust to github
+AWS authentication requires setting up an OIDC provider with a trust to github with the role arn added as AWS_OIDC_ROLE in the github repo secrets
 
 To execute build of an empty commit
 
